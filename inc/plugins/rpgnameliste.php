@@ -342,9 +342,9 @@ function rpgnameliste_misc() {
 		
 		// user name
 		$username=$db->query("
-		  SELECT * FROM mybb_users
-		  LEFT JOIN mybb_userfields
-		  ON mybb_users.uid = mybb_userfields.ufid
+		  SELECT * FROM ".TABLE_PREFIX."users
+		  LEFT JOIN ".TABLE_PREFIX."userfields
+		  ON ".TABLE_PREFIX."users.uid = ".TABLE_PREFIX."userfields.ufid
 		  WHERE as_uid LIKE '0'
 		  ORDER BY $usernamefid ASC"
 		  );
