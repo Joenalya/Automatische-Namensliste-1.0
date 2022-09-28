@@ -81,7 +81,7 @@ function rpgnameliste_install()
         	'disporder' => 6
     	),
     	'rpgnamelistecp_asian' => array(
-        	'title' => 'Soll das Asiatische Namessystem (Nachname Vorname) aktiviert werden?',
+        	'title' => 'Soll das Asiatische Namenssystem (Nachname Vorname) aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
         	'value' => '0', // Default
