@@ -9,7 +9,7 @@ $plugins->add_hook("misc_start", "rpgnameliste_misc");
 function rpgnameliste_info()
 {
     return array(
-        "name"            => "Automatische Namesliste (RPG-Plugin)",
+        "name"            => "Automatische Namensliste (RPG-Plugin)",
         "description"    => "Erstellt eine automatische Liste, die nach Vor- und Nachnamen, sowie Usernamen sotiert.",
         "website"        => "https://github.com/Joenalya",
         "author"        => "Joenalya aka. Anne",
@@ -27,7 +27,7 @@ function rpgnameliste_install()
 	// create settinggroup
 	$setting_group = array(
     	'name' => 'rpgnamelistecp',
-    	'title' => 'Automatische Namesliste',
+    	'title' => 'Automatische Namensliste',
     	'description' => 'Einstellungen für die automatische Namensliste.',
     	'disporder' => -1, // The order your setting group will display
     	'isdefault' => 0
@@ -106,7 +106,7 @@ function rpgnameliste_install()
         'title'        => 'misc_rpgnameliste',
         'template'    => $db->escape_string('<html>
 <head>
-<title>{$mybb->settings[\'bbname\']} - Namesliste</title>
+<title>{$mybb->settings[\'bbname\']} - Namensliste</title>
 {$headerinclude}
 </head>
 <body>
