@@ -46,7 +46,7 @@ function rpgnameliste_install()
         	'disporder' => 1
     	),
     	'rpgnamelistecp_noteam' => array(
-        	'title' => 'Ausgeschlossene Usergruppen',
+        	'title' => 'Ausgeschlossene Useraccounts',
         	'description' => 'Welche Accounts sollen auf der Übersicht nicht erscheinen? IDs mit "," trennen.',
 			'optionscode'	=> 'text',
         	'value' => '', // Default
