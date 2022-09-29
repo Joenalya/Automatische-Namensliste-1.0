@@ -411,7 +411,9 @@ function rpgnameliste_misc() {
 		eval("\$page = \"".$templates->get("misc_rpgnameliste")."\";");
 		output_page($page);
         
-    }
+    }else{
+    error_no_permission();
+  }
 }
 
 function rpgnameliste_user_activity($user_activity)
