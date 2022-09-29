@@ -42,50 +42,64 @@ function rpgnameliste_install()
         	'title' => 'Soll die Namesliste aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
-        	'value' => '1', // Default
+        	'value' => '0', // Default
         	'disporder' => 1
+    	),
+    	'rpgnamelistecp_noteam' => array(
+        	'title' => 'Ausgeschlossene Usergruppen',
+        	'description' => 'Welche Accounts sollen auf der Übersicht nicht erscheinen? IDs mit "," trennen.',
+			'optionscode'	=> 'text',
+        	'value' => '', // Default
+        	'disporder' => 2
+    	),		
+    	'rpgnamelistecp_nogrp' => array(
+        	'title' => 'Ausgeschlossene Usergruppen',
+        	'description' => 'Welche Usergruppen sollen auf der Übersicht nicht erscheinen?',
+			'optionscode'	=> 'groupselect',
+        	'value' => '', // Default
+        	'disporder' => 3
     	),
     	'rpgnamelistecp_genderfid' => array(
         	'title' => 'Geschlecht-Profilfeld',
         	'description' => 'Hier die Field-ID des Geschlecht-Feld angeben.',
-        	'optionscode' => 'text',
-        	'value' => '99', // Default
-        	'disporder' => 2
+        	'optionscode' => 'numeric',
+        	'value' => '', // Default
+        	'disporder' => 4
     	),
 		'rpgnamelistecp_doppel' => array(
         	'title' => 'Doppelte Vornamen?',
         	'description' => 'Soll die Funktion für Doppelte Vornamen aktiv sein?',
         	'optionscode' => 'yesno',
         	'value' => '0', // Default
-        	'disporder' => 3
+        	'disporder' => 5
 		),
     	'rpgnamelistecp_doppelfid' => array(
         	'title' => 'Doppelte Vornamen-Profilfeld',
         	'description' => 'Hier die Field-ID des Doppelte Vornamen-Feld angeben.',
-        	'optionscode' => 'text',
-        	'value' => '99', // Default
-        	'disporder' => 4
+        	'optionscode' => 'numeric',
+        	'value' => '', // Default
+        	'disporder' => 6
     	),
     	'rpgnamelistecp_username' => array(
         	'title' => 'Soll der Spielernamen-Zusatz aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
         	'value' => '1', // Default
-        	'disporder' => 5
+        	'disporder' => 7
     	),
 		'rpgnamelistecp_usernamefid' => array(
         	'title' => 'Spielernamen-Profilfeld',
         	'description' => 'Hier die Field-ID des Spielernamen-Feld angeben.',
-        	'optionscode' => 'text',
-        	'value' => '99', // Default
-        	'disporder' => 6
+        	'optionscode' => 'numeric',
+        	'value' => '', // Default
+        	'disporder' => 8
     	),
     	'rpgnamelistecp_asian' => array(
         	'title' => 'Soll das Asiatische Namenssystem (Nachname Vorname) aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
         	'value' => '0', // Default
-        	'disporder' => 7
+        	'disporder' => 9
     	),
 	);
 
@@ -223,6 +237,9 @@ function rpgnameliste_misc() {
 	 $double_active = (int)$mybb->settings['rpgnamelistecp_doppel'];
 	 $asian_active = (int)$mybb->settings['rpgnamelistecp_asian'];
 	 
+	 $get_noteam = $mybb->settings['rpgnamelistecp_noteam'];
+	 $get_nogrp = $mybb->settings['rpgnamelistecp_nogrp'];
+	 
 	 $get_gender = (int)$mybb->settings['rpgnamelistecp_genderfid'];
 	 $get_username = (int)$mybb->settings['rpgnamelistecp_usernamefid'];
 	 $get_double = (int)$mybb->settings['rpgnamelistecp_doppelfid'];
@@ -231,8 +248,21 @@ function rpgnameliste_misc() {
 	 $genderfid = "fid{$get_gender}";
 	 $usernamefid = "fid{$get_username}";
 	 
-	 if($mybb->input['action'] == "rpgnameliste") {
-		 
+	 if($get_noteam != "0") {
+		 $noteamreplace = str_replace(',','\' AND uid NOT LIKE \'',$get_noteam);
+		 $noteamsql = "AND (uid NOT LIKE '$noteamreplace')";
+		 $noteamsql1 = "WHERE (uid NOT LIKE '$noteamreplace')";
+	};
+	
+	 if($get_nogrp != "0") {
+		 $nogrpreplace = str_replace(',','\' AND usergroup NOT LIKE \'',$get_nogrp);
+		 $nogrpsql = "WHERE (usergroup NOT LIKE '$nogrpreplace')";
+		 $nogrpsql1 = "AND (usergroup NOT LIKE '$nogrpreplace')";
+	};
+	
+	if($get_noteam != "0" && $get_nogrp != "0") {$nogrpsql = "AND (usergroup NOT LIKE '$nogrpreplace')";};
+	
+	 if($mybb->input['action'] == "rpgnameliste" && $plugin_active == "1") { 
 		 
 	if($asian_active == "1") {
 		
@@ -240,7 +270,9 @@ function rpgnameliste_misc() {
 		$firstname = $db->query("  
 		SELECT * FROM ".TABLE_PREFIX."users
 		LEFT JOIN ".TABLE_PREFIX."userfields 
-		ON ".TABLE_PREFIX."userfields.ufid = ".TABLE_PREFIX."users.uid;");
+		ON ".TABLE_PREFIX."userfields.ufid = ".TABLE_PREFIX."users.uid
+		$noteamsql1 $nogrpsql
+		;");
 		while($name = $db->fetch_array($firstname)) {
 			
 			$fullname = htmlspecialchars($name['username']);
@@ -286,7 +318,8 @@ function rpgnameliste_misc() {
 		SELECT * FROM ".TABLE_PREFIX."users
 		LEFT JOIN ".TABLE_PREFIX."userfields 
 		ON ".TABLE_PREFIX."userfields.ufid = ".TABLE_PREFIX."users.uid
-		ORDER BY username ASC;");
+		$noteamsql1 $nogrpsql
+		;");
 		while($name = $db->fetch_array($firstname)) {
 			
 			$fullname = htmlspecialchars($name['username']);
@@ -346,6 +379,7 @@ function rpgnameliste_misc() {
 		  LEFT JOIN ".TABLE_PREFIX."userfields
 		  ON ".TABLE_PREFIX."users.uid = ".TABLE_PREFIX."userfields.ufid
 		  WHERE as_uid LIKE '0'
+		  $noteamsql $nogrpsql1
 		  ORDER BY $usernamefid ASC"
 		  );
 		  while($player = $db->fetch_array($username)) {
