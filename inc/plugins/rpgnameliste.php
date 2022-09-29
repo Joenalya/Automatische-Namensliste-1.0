@@ -5,6 +5,9 @@ if(!defined("IN_MYBB")){die("Direct initialization of this file is not allowed."
 
 // hooks
 $plugins->add_hook("misc_start", "rpgnameliste_misc");
+$plugins->add_hook ('fetch_wol_activity_end', 'rpgnameliste_user_activity');
+$plugins->add_hook ('build_friendly_wol_location_end', 'rpgnameliste_location_activity');
+
 
 function rpgnameliste_info()
 {
@@ -409,4 +412,26 @@ function rpgnameliste_misc() {
 		output_page($page);
         
     }
+}
+
+function rpgnameliste_user_activity($user_activity)
+{
+    global $user;
+
+    if (my_strpos ($user['location'], "misc.php?action=rpgnameliste") !== false) {
+        $user_activity['activity'] = "rpgnameliste";
+    }
+
+    return $user_activity;
+}
+
+function rpgnameliste_location_activity($plugin_array)
+{
+    global $db, $mybb, $lang;
+
+    if ($plugin_array['user_activity']['activity'] == "rpgnameliste") {
+        $plugin_array['location_name'] = "Sieht sich die <b><a href='misc.php?action=rpgnameliste'>Namensliste</a></b> an.";
+    }
+
+    return $plugin_array;
 }
