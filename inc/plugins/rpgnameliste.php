@@ -14,7 +14,7 @@ function rpgnameliste_info()
         "website"        => "https://github.com/Joenalya",
         "author"        => "Joenalya aka. Anne",
         "authorsite"    => "https://github.com/Joenalya",
-        "version"        => "1.0",
+        "version"        => "1.1",
         "codename"        => "rpgnameliste",
         "compatibility" => "18"
     );
