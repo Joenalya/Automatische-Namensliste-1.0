@@ -275,7 +275,7 @@ function rpgnameliste_misc() {
 		LEFT JOIN ".TABLE_PREFIX."userfields 
 		ON ".TABLE_PREFIX."userfields.ufid = ".TABLE_PREFIX."users.uid
 		$noteamsql1 $nogrpsql
-		;");
+		ORDER BY ".TABLE_PREFIX."username ASC;");
 		while($name = $db->fetch_array($firstname)) {
 			
 			$fullname = htmlspecialchars($name['username']);
@@ -322,7 +322,7 @@ function rpgnameliste_misc() {
 		LEFT JOIN ".TABLE_PREFIX."userfields 
 		ON ".TABLE_PREFIX."userfields.ufid = ".TABLE_PREFIX."users.uid
 		$noteamsql1 $nogrpsql
-		;");
+		ORDER BY ".TABLE_PREFIX."username ASC;");
 		while($name = $db->fetch_array($firstname)) {
 			
 			$fullname = htmlspecialchars($name['username']);
