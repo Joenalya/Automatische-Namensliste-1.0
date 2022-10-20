@@ -435,3 +435,4 @@ function rpgnameliste_location_activity($plugin_array)
 
     return $plugin_array;
 }
+?>
