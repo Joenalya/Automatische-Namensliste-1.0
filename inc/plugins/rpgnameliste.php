@@ -17,7 +17,7 @@ function rpgnameliste_info()
         "website"        => "https://github.com/Joenalya",
         "author"        => "Joenalya aka. Anne",
         "authorsite"    => "https://github.com/Joenalya",
-        "version"        => "1.1",
+        "version"        => "1.2",
         "codename"        => "rpgnameliste",
         "compatibility" => "18"
     );
@@ -69,40 +69,47 @@ function rpgnameliste_install()
         	'value' => '', // Default
         	'disporder' => 4
     	),
+		'rpgnamelistecp_divers' => array(
+        	'title' => 'Diverse Optionen?',
+        	'description' => 'Gibt es die möglichlichkeit "divers" beim Geschlecht auszuwählen?',
+        	'optionscode' => 'yesno',
+        	'value' => '0', // Default
+        	'disporder' => 5
+		),
 		'rpgnamelistecp_doppel' => array(
         	'title' => 'Doppelte Vornamen?',
         	'description' => 'Soll die Funktion für Doppelte Vornamen aktiv sein?',
         	'optionscode' => 'yesno',
         	'value' => '0', // Default
-        	'disporder' => 5
+        	'disporder' => 6
 		),
     	'rpgnamelistecp_doppelfid' => array(
         	'title' => 'Doppelte Vornamen-Profilfeld',
         	'description' => 'Hier die Field-ID des Doppelte Vornamen-Feld angeben.',
         	'optionscode' => 'numeric',
         	'value' => '', // Default
-        	'disporder' => 6
+        	'disporder' => 7
     	),
     	'rpgnamelistecp_username' => array(
         	'title' => 'Soll der Spielernamen-Zusatz aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
         	'value' => '1', // Default
-        	'disporder' => 7
+        	'disporder' => 8
     	),
 		'rpgnamelistecp_usernamefid' => array(
         	'title' => 'Spielernamen-Profilfeld',
         	'description' => 'Hier die Field-ID des Spielernamen-Feld angeben.',
         	'optionscode' => 'numeric',
         	'value' => '', // Default
-        	'disporder' => 8
+        	'disporder' => 9
     	),
     	'rpgnamelistecp_asian' => array(
         	'title' => 'Soll das Asiatische Namenssystem (Nachname Vorname) aktiviert werden?',
         	'description' => '',
         	'optionscode' => 'yesno',
         	'value' => '0', // Default
-        	'disporder' => 9
+        	'disporder' => 10
     	),
 	);
 
@@ -133,6 +140,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="tcat" width="25%"><strong>Männliche Vornamen</strong></td>
 		<td class="tcat" width="25%"><strong>Weibliche Vornamen</strong></td>
+		{$diverspart}
 		<td class="tcat" width="35%"><strong>Nachnamen</strong></td>
 		{$usernamepart}
 	</tr>
@@ -141,6 +149,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="trow2">{$first_name1A}</td>
 		<td class="trow2">{$first_name1B}</td>
+		{$diverspart1}
 		<td class="trow2">{$second_name1}</td>
 		{$usernamepart1}
 	</tr>
@@ -149,6 +158,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="trow2">{$first_name2A}</td>
 		<td class="trow2">{$first_name2B}</td>
+		{$diverspart2}
 		<td class="trow2">{$second_name2}</td>
 		{$usernamepart2}
 	</tr>
@@ -157,6 +167,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="trow2">{$first_name3A}</td>
 		<td class="trow2">{$first_name3B}</td>
+		{$diverspart3}
 		<td class="trow2">{$second_name3}</td>
 		{$usernamepart3}
 	</tr>
@@ -165,6 +176,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="trow2">{$first_name4A}</td>
 		<td class="trow2">{$first_name4B}</td>
+		{$diverspart4}
 		<td class="trow2">{$second_name4}</td>
 		{$usernamepart4}
 	</tr>
@@ -173,6 +185,7 @@ function rpgnameliste_install()
 	<tr>
 		<td class="trow2">{$first_name5A}</td>
 		<td class="trow2">{$first_name5B}</td>
+		{$diverspart5}
 		<td class="trow2">{$second_name5}</td>
 		{$usernamepart5}
 	</tr>
@@ -235,10 +248,14 @@ function rpgnameliste_deactivate()
 function rpgnameliste_misc() {
 	 global $mybb, $db, $lang, $templates, $headerinclude, $header, $footer, $theme;
 	 
-	 $plugin_active = (int)$mybb->settings['rpgnamelistecp_activate'];
+	 $namelist_active = (int)$mybb->settings['rpgnamelistecp_activate'];
+	
+	 if($mybb->input['action'] == "rpgnameliste" && $namelist_active == "1") { 
+	 
 	 $user_active = (int)$mybb->settings['rpgnamelistecp_username'];
 	 $double_active = (int)$mybb->settings['rpgnamelistecp_doppel'];
 	 $asian_active = (int)$mybb->settings['rpgnamelistecp_asian'];
+	 $divers_active = (int)$mybb->settings['rpgnamelistecp_divers'];
 	 
 	 $get_noteam = $mybb->settings['rpgnamelistecp_noteam'];
 	 $get_nogrp = $mybb->settings['rpgnamelistecp_nogrp'];
@@ -264,8 +281,6 @@ function rpgnameliste_misc() {
 	};
 	
 	if($get_noteam != "0" && $get_nogrp != "0") {$nogrpsql = "AND (usergroup NOT LIKE '$nogrpreplace')";};
-	
-	 if($mybb->input['action'] == "rpgnameliste" && $plugin_active == "1") { 
 		 
 	if($asian_active == "1") {
 		
@@ -300,6 +315,14 @@ function rpgnameliste_misc() {
 			if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $Name_Done) && ($gender == "weiblich")) { eval("\$first_name3B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
 			if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $Name_Done) && ($gender == "weiblich")) { eval("\$first_name4B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
 			if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $Name_Done) && ($gender == "weiblich")) { eval("\$first_name5B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+			
+			if($divers_active == "1") {
+				if(preg_match("/^(A|a|B|b|C|c|D|d|E|e)/", $fullname) && ($gender == "divers")) { eval("\$first_name1C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};	
+				if(preg_match("/^(F|f|G|g|H|h|I|i|J|j)/", $fullname) && ($gender == "divers")) { eval("\$first_name2C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $fullname) && ($gender == "divers")) { eval("\$first_name3C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $fullname) && ($gender == "divers")) { eval("\$first_name4C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $fullname) && ($gender == "divers")) { eval("\$first_name5C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+			};
 		}	
 		
 		// last name
@@ -360,6 +383,14 @@ function rpgnameliste_misc() {
 			if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $fullname) && ($gender == "weiblich")) { eval("\$first_name3B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
 			if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $fullname) && ($gender == "weiblich")) { eval("\$first_name4B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
 			if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $fullname) && ($gender == "weiblich")) { eval("\$first_name5B .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+			
+			if($divers_active == "1") {
+				if(preg_match("/^(A|a|B|b|C|c|D|d|E|e)/", $fullname) && ($gender == "divers")) { eval("\$first_name1C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};	
+				if(preg_match("/^(F|f|G|g|H|h|I|i|J|j)/", $fullname) && ($gender == "divers")) { eval("\$first_name2C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $fullname) && ($gender == "divers")) { eval("\$first_name3C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $fullname) && ($gender == "divers")) { eval("\$first_name4C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $fullname) && ($gender == "divers")) { eval("\$first_name5C .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+			};
 		}
 		
 		// last name
@@ -374,27 +405,27 @@ function rpgnameliste_misc() {
 		}
 	}	
 		
-	if($user_active == "1") {
+		if($user_active == "1") {
 		
-		// user name
-		$username=$db->query("
-		  SELECT * FROM ".TABLE_PREFIX."users
-		  LEFT JOIN ".TABLE_PREFIX."userfields
-		  ON ".TABLE_PREFIX."users.uid = ".TABLE_PREFIX."userfields.ufid
-		  WHERE as_uid LIKE '0'
-		  $noteamsql $nogrpsql1
-		  ORDER BY $usernamefid ASC"
-		  );
-		  while($player = $db->fetch_array($username)) {
-			  $User_Done = $player[$usernamefid];
-			  $Name_Done ="";
-		
-			if(preg_match("/^(A|a|B|b|C|c|D|d|E|e)/", $User_Done)) { eval("\$user_name1 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};		
-			if(preg_match("/^(F|f|G|g|H|h|I|i|J|j)/", $User_Done)) { eval("\$user_name2 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
-			if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $User_Done)) { eval("\$user_name3 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
-			if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $User_Done)) { eval("\$user_name4 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
-			if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $User_Done)) { eval("\$user_name5 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
-		}
+			// username
+			$username=$db->query("
+			  SELECT * FROM ".TABLE_PREFIX."users
+			  LEFT JOIN ".TABLE_PREFIX."userfields
+			  ON ".TABLE_PREFIX."users.uid = ".TABLE_PREFIX."userfields.ufid
+			  WHERE as_uid LIKE '0'
+			  $noteamsql $nogrpsql1
+			  ORDER BY $usernamefid ASC"
+			  );
+			  while($player = $db->fetch_array($username)) {
+				  $User_Done = $player[$usernamefid];
+				  $Name_Done ="";
+			
+				if(preg_match("/^(A|a|B|b|C|c|D|d|E|e)/", $User_Done)) { eval("\$user_name1 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};		
+				if(preg_match("/^(F|f|G|g|H|h|I|i|J|j)/", $User_Done)) { eval("\$user_name2 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(K|k|L|l|M|m|N|n|O|o)/", $User_Done)) { eval("\$user_name3 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(P|p|Q|q|R|r|S|s|T|t)/", $User_Done)) { eval("\$user_name4 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+				if(preg_match("/^(U|u|V|v|W|w|X|x|Y|y|Z|z)/", $User_Done)) { eval("\$user_name5 .= \"".$templates->get("misc_rpgnameliste_bit")."\";");};
+			}
 		
 			$colspan = "4";
 			$usernamepart = "<td class=\"tcat\" width=\"20%\"><strong>Usernamen</strong></td>";
@@ -403,10 +434,29 @@ function rpgnameliste_misc() {
 			$usernamepart3 = "<td class=\"trow2\">{$user_name3}</td>";
 			$usernamepart4 = "<td class=\"trow2\">{$user_name4}</td>";
 			$usernamepart5 = "<td class=\"trow2\">{$user_name5}</td>";
-		} else {
+		} 
+		else {
 			$colspan = "3";
 			$usernamepart = "";
 		}
+		
+		if($divers_active == "1") {
+			
+			$colspan = "4";
+			$diverspart = "<td class=\"tcat\" width=\"20%\"><strong>Diverse Vornamen</strong></td>";
+			$diverspart1 = "<td class=\"trow2\">{$first_name1C}</td>";
+			$diverspart2 = "<td class=\"trow2\">{$first_name2C}</td>";
+			$diverspart3 = "<td class=\"trow2\">{$first_name3C}</td>";
+			$diverspart4 = "<td class=\"trow2\">{$first_name4C}</td>";
+			$diverspart5 = "<td class=\"trow2\">{$first_name5C}</td>";
+		
+		}	
+		else {
+			$colspan = "3";
+			$diverspart = "";
+		}
+		
+		if($divers_active == "1" && $user_active == "1") {$colspan = "5";};
 		
 		eval("\$page = \"".$templates->get("misc_rpgnameliste")."\";");
 		output_page($page);
