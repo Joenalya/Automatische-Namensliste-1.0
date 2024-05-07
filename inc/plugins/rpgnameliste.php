@@ -32,7 +32,7 @@ function rpgnameliste_install()
     	'name' => 'rpgnamelistecp',
     	'title' => 'Automatische Namensliste',
     	'description' => 'Einstellungen für die automatische Namensliste.',
-    	'disporder' => -1, // The order your setting group will display
+    	'disporder' => 1, // The order your setting group will display
     	'isdefault' => 0
 	);
 	
